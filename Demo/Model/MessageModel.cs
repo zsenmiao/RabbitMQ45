@@ -7,7 +7,6 @@ namespace Model
     public class MessageModel
     {
         public string Msg { get; set; }
-
         public DateTime CreateDateTime { get; set; }
     }
 }
