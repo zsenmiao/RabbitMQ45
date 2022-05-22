@@ -11,6 +11,7 @@ namespace MS.Queue.Framework
         private IConnection _connection;
         private MqConfig config;
         private QueueMessageAttribute info;
+        private IBasicProperties props;
         public RabbitMQPublisher(Action<MqConfig> func)
         {
             info = typeof(T).GetCustomAttribute<QueueMessageAttribute>();
@@ -40,20 +41,25 @@ namespace MS.Queue.Framework
             _channel = _connection.CreateModel();
             // 声明一个Exchange
             _channel.ExchangeDeclare(info.ExchangeName, ExchangeType.Fanout, info.IsProperties, false, null);
-            // 声明一个队列 
-            _channel.QueueDeclare(info.QueueName, info.IsProperties, false, false, null);
-            //将队列绑定到交换机
-            _channel.QueueBind(info.QueueName, info.ExchangeName, info.RoutingKey, null);
+
+            if (!string.IsNullOrWhiteSpace(info.QueueName))
+            {
+                props = _channel.CreateBasicProperties();
+                //props.ContentType = "text/plain";
+                props.DeliveryMode = 2;
+                props.Expiration = info.Expiration;
+                _channel.QueueDeclare(info.QueueName, info.IsProperties, false, false, null);
+                _channel.QueueBind(info.QueueName, info.ExchangeName, info.RoutingKey, null);
+            }
         }
         /// <summary>
         /// 发布消息
         /// </summary>
         public void Publish(T data)
-        {
-            // 对象转 object[] 发送
+        {   
             var msg = JsonConvert.SerializeObject(data);
             byte[] bytes = config.Encoding.GetBytes(msg);
-            _channel.BasicPublish(info.ExchangeName, info.RoutingKey, null, bytes);
+            _channel.BasicPublish(info.ExchangeName, info.RoutingKey, props, bytes);
         }
 
         public void Dispose()

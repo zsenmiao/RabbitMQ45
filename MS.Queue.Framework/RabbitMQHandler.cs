@@ -8,7 +8,6 @@ namespace MS.Queue.Framework
 {
     public class RabbitMQHandler<T> : IDisposable where T : class
     {
-
         private IModel _channel;
         private EventingBasicConsumer _consumer;
         private IConnection _connection;
@@ -40,8 +39,18 @@ namespace MS.Queue.Framework
             };
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
-            _channel.QueueDeclare(info.QueueName, info.IsProperties, false, false, null);
-            _channel.BasicQos(0, 1, false);
+            _channel.ExchangeDeclare(info.ExchangeName, ExchangeType.Fanout, info.IsProperties, false, null);
+
+            if (string.IsNullOrWhiteSpace(info.QueueName))
+            {
+                info.QueueName = _channel.QueueDeclare().QueueName;
+                _channel.QueueBind(info.QueueName, info.ExchangeName, info.RoutingKey);
+            }
+            else
+            {
+                _channel.BasicQos(0, 1, false);
+                _channel.QueueDeclare(info.QueueName, info.IsProperties, false, false, null);
+            }
         }
 
         public void Subscribe(Action<T> handler)
@@ -55,9 +64,9 @@ namespace MS.Queue.Framework
                     var t = JsonConvert.DeserializeObject<T>(config.Encoding.GetString(args.Body));
                     handler(t);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
+                    Console.WriteLine(e.Message);
                 }
                 finally
                 {

@@ -3,7 +3,7 @@ using System;
 
 namespace Model
 {
-    [QueueMessage("Test.Queue", "Test.Exchange", false)]
+    [QueueMessage("Test2.Ex")]
     public class MessageModel
     {
         public string Msg { get; set; }

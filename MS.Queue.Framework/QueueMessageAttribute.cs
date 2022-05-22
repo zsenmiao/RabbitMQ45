@@ -6,13 +6,15 @@ namespace MS.Queue.Framework
     public class QueueMessageAttribute : Attribute
     {
 
-        public QueueMessageAttribute(string queueName, string exchangeName, bool isProperties = false)
+        public QueueMessageAttribute(string exchangeName, string queueName = "", bool isProperties = true, string expiration = "10000")
         {
+            Expiration = expiration;
             ExchangeName = exchangeName;
             QueueName = queueName;
             RoutingKey = queueName;
             IsProperties = isProperties;
         }
+        public string Expiration { get; set; }
         /// <summary>
         /// 交换机名称
         /// </summary>
@@ -21,7 +23,7 @@ namespace MS.Queue.Framework
         /// <summary>
         /// 队列名称
         /// </summary>
-        public string QueueName { get; private set; }
+        public string QueueName { get; set; }
 
         public string RoutingKey { get; set; }
 
