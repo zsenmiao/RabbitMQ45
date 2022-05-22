@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>MSQueueFramework</id>
+    <version>1.0.0</version>
+    <title>RabbitMQ帮助类</title>
+    <authors>mushui</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <!-- <icon>icon.png</icon> -->
+    <projectUrl>https://github.com/zsenmiao/RabbitMQ45</projectUrl>
+    <description>RabbitMQ帮助类</description>
+    <releaseNotes>init</releaseNotes>
+    <copyright>mushui</copyright>
+    <tags>.net4.5 rabbitmq</tags>
+  </metadata>
+</package>
